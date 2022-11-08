@@ -1,62 +1,75 @@
 package kodlama.io.kodlama.io.Devs.business.concretes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import kodlama.io.kodlama.io.Devs.business.abstracts.PrLangService;
+import kodlama.io.kodlama.io.Devs.business.requests.prLangs.CreatePrLangRequest;
+import kodlama.io.kodlama.io.Devs.business.requests.prLangs.DeletePrLangRequest;
+import kodlama.io.kodlama.io.Devs.business.requests.prLangs.UpdatePrLangRequest;
+import kodlama.io.kodlama.io.Devs.business.responses.prLangs.GetAllPrLangsResponse;
+import kodlama.io.kodlama.io.Devs.business.responses.prLangs.GetByIdPrLangResponse;
 import kodlama.io.kodlama.io.Devs.dataAccess.abstracts.PrLangRepository;
 import kodlama.io.kodlama.io.Devs.entities.concretes.PrLang;
 
 @Service
 public class PrLangManager implements PrLangService{
 
-	PrLangRepository prLangRepository;
+	private PrLangRepository prLangRepository;
 	@Autowired
 	public PrLangManager(PrLangRepository prLangRepository) {
 		this.prLangRepository = prLangRepository;
 	}
 
 	@Override
-	public void add(PrLang prLang) throws Exception {
-		for(PrLang checker : prLangRepository.getAll()) {
-			if(checker.getName().contentEquals(prLang.getName())) {
-				throw new Exception("It can't be as the same name of others");
+	public List<GetAllPrLangsResponse> getAll() {
+		List<PrLang> prLangs = prLangRepository.findAll();
+		List<GetAllPrLangsResponse> prLangsResponse = new ArrayList<GetAllPrLangsResponse>();
+		for(PrLang prLang : prLangs) {
+			GetAllPrLangsResponse responseItem = new GetAllPrLangsResponse();
+			responseItem.setId(prLang.getId());
+			responseItem.setName(prLang.getName());
+			prLangsResponse.add(responseItem);
+		}
+		return prLangsResponse;
+	}
+
+	@Override
+	public void add(CreatePrLangRequest createPrLangRequest) {
+		PrLang prLang = new PrLang();
+		prLang.setName(createPrLangRequest.getName());
+		this.prLangRepository.save(prLang);
+	}
+
+	@Override
+	public void delete(DeletePrLangRequest deletePrLangRequest) {
+		this.prLangRepository.deleteById(deletePrLangRequest.getId());
+		
+	}
+
+	@Override
+	public GetByIdPrLangResponse getById(int id) {
+		PrLang prLang = prLangRepository.getReferenceById(id);
+		GetByIdPrLangResponse responseItem = new GetByIdPrLangResponse();
+		responseItem.setId(prLang.getId());
+		responseItem.setName(prLang.getName());
+		return responseItem; 
+	}
+
+	@Override
+	public void update(int id, UpdatePrLangRequest updatePrLangRequest) {
+		List<PrLang> prLangs = prLangRepository.findAll();
+		for(PrLang prLang : prLangs) {
+			if (prLang.getId() == id) {
+				prLang.setName(updatePrLangRequest.getName());
+				prLangRepository.save(prLang);
+				break;
 			}
 		}
-		if(prLang.getName().trim().isEmpty()) {
-			throw new Exception("It can't be empty or null");
-		}
-		prLangRepository.add(prLang);
+		
 	}
-
-	@Override
-	public void delete(int id) {
-		prLangRepository.delete(id);
-	}
-
-	@Override
-	public void update(PrLang prLang) throws Exception {
-		for(PrLang checker : prLangRepository.getAll()) {
-			if(checker.getName().contentEquals(prLang.getName())) {
-				throw new Exception("It can't be as the same name of others");
-			}
-		}
-		if(prLang.getName().trim().isEmpty()) {
-			throw new Exception("It can't be empty or null");
-		}
-		prLangRepository.update(prLang);
-	}
-
-	@Override
-	public List<PrLang> getAll() {
-		return prLangRepository.getAll();
-	}
-
-	@Override
-	public PrLang getById(int id) {
-		return prLangRepository.getById(id);
-	}
-
+	
 }

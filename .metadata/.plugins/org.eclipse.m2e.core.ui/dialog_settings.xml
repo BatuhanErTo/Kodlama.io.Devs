@@ -2,6 +2,8 @@
 <section name="Workbench">
 	<section name="MavenProjectImportWizardPage">
 		<list key="rootDirectory">
+			<item value="C:\Users\batuh\Kodlama.io.Devs\Kodlama.io.Devs\src"/>
+			<item value="C:\Users\batuh\Kodlama.io.Devs\Kodlama.io.Devs"/>
 		</list>
 		<list key="projectNameTemplate">
 			<item value="[artifactId]"/>
